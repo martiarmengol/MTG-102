@@ -17,3 +17,6 @@ __pycache__/
 # Ignore system files
 .DS_Store
 Thumbs.db
+
+# ignore visaualitzation screenshots (python)
+code/screenshots/
