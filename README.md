@@ -140,60 +140,94 @@ A detailed README.md outlines the project goals, setup instructions, and usage e
 In our project on the classification and analysis of Catalan music, we deal with high-dimensional audio features extracted from songs. To visualize and interpret these complex datasets effectively, we employ dimensionality reduction techniques such as Principal Component Analysis (PCA), t-Distributed Stochastic Neighbor Embedding (t-SNE), and Uniform Manifold Approximation and Projection (UMAP). These methods help in projecting high-dimensional data into lower-dimensional spaces, facilitating better understanding and visualization of the underlying structures and patterns.
 
 #### 2.4.1 Principal Component Analysis (PCA)
-PCA is a linear dimensionality reduction technique that transforms the original variables into a new set of uncorrelated variables called principal components. These components are ordered so that the first few retain most of the variation present in the original dataset. In the context of music analysis, PCA can help in reducing redundancy by transforming correlated musical features into a set of linearly uncorrelated variables, thereby simplifying the dataset without significant loss of information [6].
-
-<img src="res/pca.png" alt="PCA" width="300" style="float: right;"/>
+<div>
+  <img src="res/pca.png" alt="PCA" width="300" style="float: right; margin-left: 20px;"/>
+  <p>
+  PCA is a linear dimensionality reduction technique that transforms the original variables into a new set of uncorrelated variables called principal components. These components are ordered so that the first few retain most of the variation present in the original dataset. In the context of music analysis, PCA can help in reducing redundancy by transforming correlated musical features into a set of linearly uncorrelated variables, thereby simplifying the dataset without significant loss of information [6].
+  </p>
+</div>
+<div style="clear: both;"></div>
 
 
 #### 2.4.2 t-Distributed Stochastic Neighbor Embedding (t-SNE)
-t-SNE is a nonlinear dimensionality reduction technique particularly well-suited for embedding high-dimensional data into a space of two or three dimensions, which can then be visualized in a scatter plot. Unlike PCA, t-SNE focuses on preserving the local structure of the data, making it effective for revealing clusters or patterns in complex datasets [7].
+<div>
+  <img src="res/t-SNE.png" alt="t-SNE" width="300" style="float: right; margin-left: 20px;"/>
+  <p>
+  t-SNE is a nonlinear dimensionality reduction technique particularly well-suited for embedding high-dimensional data into a space of two or three dimensions, which can then be visualized in a scatter plot. Unlike PCA, t-SNE focuses on preserving the local structure of the data, making it effective for revealing clusters or patterns in complex datasets [7].
+  </p>
+  <p>
+  However, it is important to note that while t-SNE excels at capturing local neighborhood relationships, it does not preserve global distances well, which makes it more useful for visualization than for downstream machine learning tasks.
+  </p>
+</div>
+<div style="clear: both;"></div>
 
-However, it is important to note that while t-SNE excels at capturing local neighborhood relationships, it does not preserve global distances well, which makes it more useful for visualization than for downstream machine learning tasks.
-
-<img src="res/t-SNE.png" alt="t-SNE" width="300" style="float: right;"/>
 
 #### 2.4.3 Uniform Manifold Approximation and Projection (UMAP)
-UMAP is a more recent nonlinear dimensionality reduction technique that builds upon ideas from manifold learning and topological data analysis. Unlike t-SNE, UMAP aims to preserve both local and global structure in the data and tends to scale better to large datasets [8]. Its flexibility and performance make it particularly useful for applications involving complex audio embeddings, such as music analysis.
-
-<img src="res/UMAP.jpg" alt="UMAP" width="300" style="float: right;"/>
-
+<div>
+  <img src="res/UMAP.jpg" alt="UMAP" width="300" style="float: right; margin-left: 20px;"/>
+  <p>
+  UMAP is a more recent nonlinear dimensionality reduction technique that builds upon ideas from manifold learning and topological data analysis. Unlike t-SNE, UMAP aims to preserve both local and global structure in the data and tends to scale better to large datasets [8]. Its flexibility and performance make it particularly useful for applications involving complex audio embeddings, such as music analysis.
+  </p>
+</div>
+<div style="clear: both;"></div>
 
 
 
 ### 2.5 Feature Extraction  
-- **Techniques**:
-  - MFCCs
-  - Spectral features
-  - BPM and rhythm descriptors
-- **Tools**:
-  - `librosa` (Python)
-  - `scikit-learn`
-  - `RStudio` for clustering/visualization
+In music classification and analysis tasks, the selection of relevant audio features is a crucial step for building effective models. Feature extraction techniques enable the transformation of raw audio signals into structured data representations that capture musical properties such as timbre, rhythm, pitch, and tempo. These features can then be used in both supervised and unsupervised learning pipelines.
 
+#### 2.5.1 Feature Extraction Techniques
+-**Mel-Frequency Cepstral Coefficients (MFCCs)**:
+ MFCCs capture the **timbral characteristics** of audio signals by modeling the short-term power spectrum based on a nonlinear mel scale of frequency. Widely used in speech and music classification tasks, MFCCs have demonstrated solid performance in genre recognition and are often combined with machine learning algorithms like KNN.
+
+
+- **Spectral Features**:
+ This category includes descriptors such as **spectral centroid, spectral roll-off, spectral bandwidth, and spectral flux**, which provide insights into the **brightness, energy, and harmonic content** of the audio. Spectral centroid, for instance, represents the “center of mass” of the spectrum and is related to the perceived sharpness of the sound.
+
+
+- **Tempo and Beats Per Minute (BPM)**:
+ **Tempo-related features**, including BPM, are essential for distinguishing between musical styles, particularly when contrasting **electronic and acoustic** music or identifying rhythmic structures. These features can help cluster songs with similar rhythmic profiles.
+
+#### 2.5.2 Tools and Libraries for Feature Extraction and Analysis
+- **Librosa**:
+ A widely used **Python library** for audio and music analysis that supports various feature extraction techniques, including **MFCCs, chroma features, spectral features, zero-crossing rate**, and more. Librosa also facilitates audio visualization and preprocessing tasks such as beat tracking and onset detection.
+
+
+- **Scikit-learn**:
+ A general-purpose machine learning library in Python offering implementations of classic algorithms such as **K-Nearest Neighbors (KNN)** and **K-Means clustering**, along with utilities for model evaluation, cross-validation, and dimensionality reduction. Scikit-learn integrates smoothly with feature extraction workflows for classification and clustering.
+
+
+- **RStudio (and R packages)**:
+ RStudio provides an environment for statistical computing and visualization. It supports clustering algorithms like **K-Means** and **K-Medoids**, with robust visualization capabilities for exploratory data analysis. R-based workflows can complement Python pipelines, especially for clustering validation and visual exploration of song groupings.
 
 ## 3. Applications Review
 
 ### 3.1 Spotify & MusicMap  
-- Proprietary embedding-based similarity systems  
-- Visualization tools like *Every Noise at Once* inspire our dimensionality reduction strategy
+Spotify offers one of the most advanced commercial systems for audio classification and song recommendation. Through its **Audio Analysis API**, it provides detailed feature extraction, including tempo, key, energy, danceability, and valence. While Spotify’s system is not open source, its underlying concepts (such as mapping songs into a feature space and using similarity-based recommendations) are directly aligned with our approach.
+
+Projects like **MusicMap** and **Every Noise at Once** (by Glenn McDonald, a Spotify engineer) visualize global music genres in a 2D space based on similarity metrics derived from Spotify’s internal embeddings. These projects show how dimensionality reduction and clustering can reveal intuitive structures in large music collections, an idea we apply on a smaller scale to our Catalan dataset.
 
 ### 3.2 Essentia & Sonic Visualiser  
-- **Essentia**: audio descriptor toolkit from UPF  
-- **Sonic Visualiser**: waveform/spectrogram explorer
+**Essentia**, developed by the Music Technology Group at Universitat Pompeu Fabra, is a popular open-source library for audio feature extraction and classification. It offers tools to compute descriptors such as spectral centroid, rhythm patterns, and tonal features. It is commonly used in MIR research and would be a valuable reference (or alternative) for feature extraction in our project, especially in earlier preprocessing phases.
+
+Similarly, **Sonic Visualiser** is a visual analysis tool designed for musicologists and audio engineers. While more manual in nature, it enables a detailed visual inspection of waveform, spectrogram, and pitch content, which can support exploratory analysis and dataset validation.
 
 ### 3.3 Music Classification Projects  
-- GTZAN, FMA: widely used for genre classification with CNNs  
-- CLAP offers a more flexible embedding model for low-resource genres
+Academic projects using datasets such as **GTZAN Genre Collection and FMA** (Free Music Archive) have demonstrated the effectiveness of deep learning and embedding-based approaches in music classification. These studies often use CNNs or autoencoders to embed songs and perform supervised classification by genre. Although our focus is unsupervised and more interpretative than predictive, these applications reinforce the value of embeddings and inspire our use of pretrained models like CLAP.
 
 ### 3.4 AudioSet & Google Models  
-- Embeddings from **VGGish**, **YAMNet** have been used in large-scale classification  
-- Serve as architectural references for CLAP-based tasks
+Google’s **AudioSet** is a large-scale dataset of labeled audio events that has been used to train robust audio embedding models like **VGGish** and **YAMNet**. These embeddings have been reused for genre classification, acoustic event detection, and music recommendation tasks. While we are using CLAP for embeddings, the use cases of AudioSet-based models provide a valuable reference for our design choices.
 
-### 3.5 GitHub-Based Implementations  
-- Hybrid KMeans + KNN approaches  
-- Example repositories:
-  - [Music Recommendation using KMeans & KNN](https://github.com/khaledsaif/music-recommendation-using-kmeans-knn)
-  - [KNN Music Genre Classification](https://github.com/monilmalur/KNN-Music-Genre-Classification)
+### 3.5 Music Recommendation and Genre Classification Projects
+#### 3.5.1 Music Recommendation Systems
+The combination of **K-Nearest Neighbors (KNN)** and **K-Means clustering** has been successfully applied in the development of music recommendation systems. These hybrid approaches leverage K-Means to group songs into clusters based on shared audio characteristics, while KNN is used to recommend tracks within or across these clusters based on proximity to user preferences or selected items.
+
+Such systems aim to provide **personalized and diverse recommendations** by balancing similarity with variety. An illustrative example is a **Kaggle-based music recommendation system** that integrates K-Means clustering for initial song grouping and applies KNN to suggest related tracks, demonstrating the practicality and flexibility of these algorithms for real-world applications.
+
+#### 3.5.2 Genre Classification Projects
+Several open-source projects highlight the effectiveness of KNN-based models for **music genre classification**. One notable example is the **“KNN-Music-Genre-Classification” project on GitHub**, which implements KNN using features like MFCCs to distinguish between genres. These implementations not only offer practical codebases but also provide valuable insights into the design choices and feature selection processes involved in genre classification tasks.
+
+Such projects reinforce the relevance of **traditional machine learning methods** like KNN and K-Means as baseline approaches in music information retrieval, complementing more recent embedding-based and deep learning techniques.
 
 
 
