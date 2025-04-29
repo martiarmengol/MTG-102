@@ -93,13 +93,13 @@ The most relevant similarity (or distance) metrics for this kind of task include
 
 - **Jaccard Index**: Evaluates similarity between binary or categorical sets, though less relevant in our case where continuous embeddings are used.  
 <div align="center">
-  <img src="res/Jaccard_Index.png" alt="Jaccard Index" width="400"/>
+  <img src="res/jaccard_index.png" alt="Jaccard Index" width="400"/>
 </div>  
 [15]
 
 - **Pearson Correlation Coefficient**: Measures the linear relationship between two vectors, useful when evaluating the correlation between feature distributions.  
 <div align="center">
-  <img src="res/Pearson_Correlation_Coefficient.png" alt="Pearson Correlation" width="400"/>
+  <img src="res/pearson_correlation_coefficient.png" alt="Pearson Correlation" width="400"/>
 </div>  
 [16]
 
