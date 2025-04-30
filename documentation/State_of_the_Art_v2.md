@@ -1,6 +1,6 @@
 ## State of the Art  
 **Project:** *Catalan Music Classification and Analysis*  
-**Version 1**  
+**Version 2**  
 **Contributors:** Adrià Cortés Cugat, Martí Armengol Ayala, Sergi De Vicente, Guillem Garcia, Jofre Geli, Javier Echávarri, Alex Salas Molina  
 **Course:** Music Technology  
 
