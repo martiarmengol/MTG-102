@@ -115,6 +115,17 @@ The integration of recommender system concepts and similarity metrics will contr
 
 In summary, recommender systems, especially content-based filtering methods and similarity metrics such as cosine similarity and Euclidean distance are key components in the analysis framework of this project. These tools will facilitate not only the evaluation of classification results but also the meaningful interpretation of the learned song embeddings, ultimately contributing to a deeper understanding of the stylistic and temporal relationships present in the Catalan music dataset.
 
+<div align="center">
+  <table>
+    <tr>
+      <td><img src="res/clusters.png" alt="Clusters" width="400"/></td>
+      <td><img src="res/pca_2.png" alt="PCA" width="400"/></td>
+    </tr>
+  </table>
+</div>
+
+
+
 ### 2.3 Version Control and Workflow Management (GitHub)
 
 GitHub serves as the central platform for code management, collaboration, and documentation throughout the project. Maintaining a clean and reliable workflow is essential due to the experimental and data-driven aspect of this project. The repository is structured to support modular development, dataset versioning, and transparent experimentation.
@@ -232,50 +243,67 @@ Such projects reinforce the relevance of **traditional machine learning methods*
 
 
 ## 4. References  
-> [1] Ricci, F., Rokach, L., & Shapira, B. (2011). Introduction to Recommender Systems Handbook. Springer.
 
-> [2] Aggarwal, C. C. (2016). Recommender Systems: The Textbook. Springer.
+> [1] Tzanetakis, G., & Cook, P. (2002). Musical genre classification of audio signals. IEEE Transactions on speech and audio processing, 10(5), 293-302.
 
-> [3] Jannach, D., Adomavicius, G., & Tuzhilin, A. (2021). "Recommender systems: Challenges, insights, and research opportunities." ACM Computing Surveys, 54(5), 1–38.
+> [2] Ye, Z., Huang, R., Ren, Y., Jiang, Z., Liu, J., He, J., ... & Zhao, Z. (2023). Clapspeech: Learning prosody from text context with contrastive language-audio pre-training. arXiv preprint arXiv:2305.10763.
 
-> [4] Manning, C. D., Raghavan, P., & Schütze, H. (2008). Introduction to Information Retrieval. Cambridge University Press.
+> [3] Kreuk, F., Synnaeve, G., Polyak, A., Singer, U., Défossez, A., Copet, J., ... & Adi, Y. (2022). Audiogen: Textually guided audio generation. arXiv preprint arXiv:2209.15352.
 
-> [5] Han, J., Kamber, M., & Pei, J. (2011). Data Mining: Concepts and Techniques. Morgan Kaufmann.
+> [4] Casey, M. A., Veltkamp, R., Goto, M., Leman, M., Rhodes, C., & Slaney, M. (2008). Content-based music information retrieval: Current directions and future challenges. Proceedings of the IEEE, 96(4), 668-696.
 
-> [6] Jolliffe, I. T., & Cadima, J. (2016). Principal component analysis: a review and recent developments. Philosophical Transactions of the Royal Society A: Mathematical, Physical and Engineering Sciences, 374(2065), 20150202.
+> [5] Peterson, L. E. (2009). K-nearest neighbor. Scholarpedia, 4(2), 1883.
 
-> [7] Van der Maaten, L., & Hinton, G. (2008). Visualizing data using t-SNE. Journal of Machine Learning Research, 9(Nov), 2579–2605.
+> [6] Buana, P. W., & Darma, I. K. G. (2012). Combination of k-nearest neighbor and k-means based on term re-weighting for classify indonesian news. International Journal of Computer Applications, 50(11).
 
-> [8] McInnes, L., Healy, J., & Melville, J. (2018). UMAP: Uniform Manifold Approximation and Projection for Dimension Reduction. arXiv preprint arXiv:1802.03426.
+> [7] Kodinariya, T. M., & Makwana, P. R. (2013). Review on determining number of Cluster in K-Means Clustering. International Journal, 1(6), 90-95.
 
-> [9]RADFORD, Alec, et al. Learning transferable visual models from natural language supervision. In: International conference on machine learning. PmLR, 2021. p. 8748-8763.
+> [8] Radford, A., Kim, J. W., Hallacy, C., Ramesh, A., Goh, G., Agarwal, S., ... & Sutskever, I. (2021, July). Learning transferable visual models from natural language supervision. In International conference on machine learning (pp. 8748-8763). PmLR.
 
-> [10] ELIZALDE, Benjamin, et al. Clap learning audio concepts from natural language supervision. In: ICASSP 2023-2023 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP). IEEE, 2023. p. 1-5.
+> [9] Elizalde, B., Deshmukh, S., Al Ismail, M., & Wang, H. (2023, June). Clap learning audio concepts from natural language supervision. In ICASSP 2023-2023 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP) (pp. 1-5). IEEE.
 
-> [11] WU, Yusong, et al. Large-scale contrastive language-audio pretraining with feature fusion and keyword-to-caption augmentation. In: ICASSP 2023-2023 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP). IEEE, 2023. p. 1-5.
+> [10] WU, Yusong, et al. Large-scale contrastive language-audio pretraining with feature fusion and keyword-to-caption augmentation. In: ICASSP 2023-2023 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP). IEEE, 2023. p. 1-5.
 
-> [12] Park, M. W., & Lee, E. C. (2013). Similarity measurement method between two songs by using the conditional Euclidean distance. Wseas Transaction On Information Science And Applications, 10, 12.
+> [11] Ricci, F., Rokach, L., & Shapira, B. (2011). Introduction to Recommender Systems Handbook. Springer.
 
-> [13] Nguyen, H. V., & Bai, L. (2010, November). Cosine similarity metric learning for face verification. In Asian conference on computer vision (pp. 709-720). Berlin, Heidelberg: Springer Berlin Heidelberg.
+> [12] Aggarwal, C. C. (2016). Recommender Systems: The Textbook. Springer.
 
-> [14] Singh, A., Yadav, A., & Rana, A. (2013). K-means with Three different Distance Metrics. International Journal of Computer Applications, 67(10).
+> [13] Jannach, D., Adomavicius, G., & Tuzhilin, A. (2021). "Recommender systems: Challenges, insights, and research opportunities." ACM Computing Surveys, 54(5), 1–38.
 
-> [15] Vorontsov, I. E., Kulakovskiy, I. V., & Makeev, V. J. (2013). Jaccard index based similarity measure to compare transcription factor binding site models. Algorithms for Molecular Biology, 8, 1-11.
+> [14] Manning, C. D., Raghavan, P., & Schütze, H. (2008). Introduction to Information Retrieval. Cambridge University Press.
 
-> [16] Cohen, I., Huang, Y., Chen, J., Benesty, J., Benesty, J., Chen, J., ... & Cohen, I. (2009). Pearson correlation coefficient. Noise reduction in speech processing, 1-4.
+> [15] Han, J., Kamber, M., & Pei, J. (2011). Data Mining: Concepts and Techniques. Morgan Kaufmann.
 
-> [17] Pratiwi, T., Sunyoto, A., & Ariatmanto, D. (2024). Music Genre Classification Using K-Nearest Neighbor and Mel-Frequency Cepstral Coefficients. Sinkron, 8(2).
+> [16] Park, M. W., & Lee, E. C. (2013). Similarity measurement method between two songs by using the conditional Euclidean distance. Wseas Transaction On Information Science And Applications, 10, 12.
 
-> [18] Mu, X. (2023). Implementation of Music Genre Classifier Using KNN Algorithm. Highlights in Science, Engineering and Technology, 34.
+> [17] Nguyen, H. V., & Bai, L. (2010, November). Cosine similarity metric learning for face verification. In Asian conference on computer vision (pp. 709-720). Berlin, Heidelberg: Springer Berlin Heidelberg.
 
-> [19] Daga, B., et al. (2023). Music Recommendation System. International Journal of Computer Trends and Technology, 71(5), 26–36.
+> [18] Singh, A., Yadav, A., & Rana, A. (2013). K-means with Three different Distance Metrics. International Journal of Computer Applications, 67(10).
 
-> [20] Privandhani, N. A., et al. (2022). Clustering Pop Songs Based on Spotify Data Using K-Means and K-Medoids. Jurnal Mantik, 6(2), 1542–1550.
+> [19] Vorontsov, I. E., Kulakovskiy, I. V., & Makeev, V. J. (2013). Jaccard index based similarity measure to compare transcription factor binding site models. Algorithms for Molecular Biology, 8, 1-11.
 
-> [21] Khaled Saif, A. (n.d.). Music Recommendation using Kmeans & KNN. GitHub Repository. Retrieved from: https://github.com/khaledsaif/music-recommendation-using-kmeans-knn
+> [20] Cohen, I., Huang, Y., Chen, J., Benesty, J., Benesty, J., Chen, J., ... & Cohen, I. (2009). Pearson correlation coefficient. Noise reduction in speech processing, 1-4.
 
-> [22] Malur, M. (n.d.). KNN-Music-Genre-Classification. GitHub Repository. Retrieved from: https://github.com/monilmalur/KNN-Music-Genre-Classification
+> [21] Jolliffe, I. T., & Cadima, J. (2016). Principal component analysis: a review and recent developments. Philosophical Transactions of the Royal Society A: Mathematical, Physical and Engineering Sciences, 374(2065), 20150202.
 
-> [23] Sharma, J. (2024). Building a Music Genre Classification System with K-Nearest Neighbors. Medium Article. Retrieved from: https://medium.com/@jatinsharma/building-a-music-genre-classification-system-with-k-nearest-neighbors-123456789
+> [22] Van der Maaten, L., & Hinton, G. (2008). Visualizing data using t-SNE. Journal of Machine Learning Research, 9(Nov), 2579–2605.
 
-> [24] Chen, P., Dong, L., & Liu, Y. (2024). Design of Music Recommendation System Based on EDA and K-Means Cluster Analysis. Proceedings of the 4th International Conference on Signal Processing and Machine Learning.
+> [23] McInnes, L., Healy, J., & Melville, J. (2018). UMAP: Uniform Manifold Approximation and Projection for Dimension Reduction. arXiv preprint arXiv:1802.03426.
+
+> [24] Olson, K. E. (2003). Music map: An approach to art music listening activities. Silver Lake College.
+
+> [25] Ord, M., & Pedie, I. (2020). Every noise at once”: Online music discovery maps and cosmopolitan subjectivities. The Bloomsbury handbook of popular music and social class, 117-133.
+
+> [26] Bogdanov, D., Wack, N., Gómez, E., Gulati, S., Herrera, P., Mayor, O., ... & Serra, X. (2013, October). Essentia: an open-source library for sound and music analysis. In Proceedings of the 21st ACM international conference on Multimedia (pp. 855-858).
+
+> [27] Cannam, C., Landone, C., & Sandler, M. (2010, October). Sonic visualiser: An open source application for viewing, analysing, and annotating music audio files. In Proceedings of the 18th ACM international conference on Multimedia (pp. 1467-1468).
+
+> [28] Defferrard, M., Benzi, K., Vandergheynst, P., & Bresson, X. (2016). FMA: A dataset for music analysis. arXiv preprint arXiv:1612.01840.
+
+> [29] Kong, Q., Xu, Y., Wang, W., & Plumbley, M. D. (2018, April). Audio set classification with attention model: A probabilistic perspective. In 2018 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP) (pp. 316-320). IEEE.
+
+> [30] Pratiwi, T., Sunyoto, A., & Ariatmanto, D. (2024). Music Genre Classification Using K-Nearest Neighbor and Mel-Frequency Cepstral Coefficients. Sinkron, 8(2).
+
+> [31] Khaled Saif, A. (n.d.). Music Recommendation using Kmeans & KNN. GitHub Repository. Retrieved from: https://github.com/khaledsaif/music-recommendation-using-kmeans-knn
+
+> [32] Malur, M. (n.d.). KNN-Music-Genre-Classification. GitHub Repository. Retrieved from: https://github.com/monilmalur/KNN-Music-Genre-Classification
