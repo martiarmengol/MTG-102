@@ -18,5 +18,9 @@ __pycache__/
 .DS_Store
 Thumbs.db
 
-# ignore visaualitzation screenshots (python)
-code/screenshots/
+
+# Data Visualization
+/venv 
+/song_embeddings
+/visualization_results
+
