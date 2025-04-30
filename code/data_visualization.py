@@ -7,18 +7,18 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.manifold import TSNE
 import plotly.express as px
-import webbrowser
+import subprocess
 
 # --- STEP 2: Load Embeddings from JSON files ---
 def load_embeddings(path, population_label):
     with open(path, 'r') as f:
-        data = json.load(f) 
+        data = json.load(f)
     rows = []
     for entry in data:
         artist = entry["artist"]
         song = entry["song"]
         embedding_matrix = np.array(entry["embedding"])  # shape (T, D)
-        agg_embedding = np.mean(embedding_matrix, axis=0) 
+        agg_embedding = np.mean(embedding_matrix, axis=0)
         rows.append({
             "Song": song,
             "Artist": artist,
@@ -73,22 +73,31 @@ else:
 plt.savefig(png_path, dpi=300)
 plt.close()
 
-# --- STEP 6: Interactive Plot with Plotly ---
+# --- STEP 6: Interactive Plot with Plotly (with symbol per Artist) ---
 df["Label"] = df["Artist"] + " - " + df["Song"]
+
 fig = px.scatter(
     df,
     x="x", y="y",
     color="Population",
+    symbol="Artist",  # NEW: distinct marker per artist
     hover_name="Label",
     title="Interactive t-SNE of Essentia Audio Embeddings",
     labels={"x": "t-SNE Dimension 1", "y": "t-SNE Dimension 2"},
-    width=900,
-    height=700
+    width=1000,
+    height=750
 )
 
 html_path = os.path.join(output_dir, "tsne_by_population_plotly.html")
 fig.write_html(html_path)
 print(f"✅ Interactive Plot saved to: {html_path}")
 
-# Auto-open in browser
-webbrowser.open(f"file://{os.path.abspath(html_path)}")
+# Auto-open in browser (WSL → Windows)
+html_full_path = os.path.abspath(html_path)
+if html_full_path.startswith("/mnt/"):
+    drive_letter = html_full_path[5]
+    windows_path = html_full_path.replace(f"/mnt/{drive_letter}/", f"{drive_letter.upper()}:\\").replace("/", "\\")
+    subprocess.run(["powershell.exe", "Start-Process", windows_path])
+else:
+    print("⚠️ Could not convert path to Windows. Please open the HTML file manually.")
+
