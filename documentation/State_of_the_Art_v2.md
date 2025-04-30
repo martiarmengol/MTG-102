@@ -52,6 +52,15 @@ It also features a “zero-shot” classification which allows it to identify ob
 #### 2.1.2 Contrastive Language-Audio Pre-training (CLAP)
 It is similar to clips but oriented to learning the connection between audio and text. It aims to learn the relationship between different sound types (music, speech, etc.) and the words we use for them. It allows tasks such as audio classification and audio recovery based on “zero shot” with no specific training for new categories. [10] [11]
 
+<div align="center">
+  <table>
+    <tr>
+      <td><img src="res/CLIP2.png" alt="CLIP2" width="400"/></td>
+      <td><img src="res/CLAP.png" alt="CLAP" width="400"/></td>
+    </tr>
+  </table>
+</div>
+
 ### 2.2 Recommender Systems and Similarity Metrics  
 #### 2.2.1 Introduction to Recommender Systems
 A recommender system is an information filtering approach designed to suggest relevant items to users based on various factors such as item characteristics, user preferences, or historical interactions. These systems are widely employed in areas like e-commerce, online streaming services, and social networks, where the primary goal is to enhance content discovery and personalize the user experience. [1] [2]
@@ -65,6 +74,15 @@ Recommender systems are commonly classified into three main categories [1][3]:
 - **Collaborative filtering**: This method relies on user-item interactions (e.g., ratings, likes, listening history) to recommend items. Since our project does not involve user data, this approach is not applicable.
 
 - **Hybrid systems**: These systems combine content-based and collaborative techniques to improve recommendation quality. However, for the scope of this project, we focus exclusively on content-based filtering.
+
+<div align="center">
+  <table>
+    <tr>
+      <td><img src="res/contentbased.png" alt="contentbased" width="400"/></td>
+      <td><img src="res/userbased.png" alt="userbased" width="400"/></td>
+    </tr>
+  </table>
+</div>
 
 Given the nature of our task, **content-based recommendation techniques** are the most suitable, as they enable the comparison of songs directly through their feature vectors or embeddings without requiring user interaction data
 
