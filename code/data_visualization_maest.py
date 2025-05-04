@@ -58,7 +58,8 @@ before = load_embeddings("song_embeddings/before_2012_maest_embeddings.pkl", "Be
 after = load_embeddings("song_embeddings/after_2018_maest_embeddings.pkl", "After 2018")
 all_songs = before + after
 
-# --- STEP 3: Convert to DataFrame ---
+
+# --- STEP 3: Flatten embeddings ---
 flat_data = []
 for song in all_songs:
     row = {
@@ -80,7 +81,7 @@ X_2d = tsne.fit_transform(X)
 df["x"] = X_2d[:, 0]
 df["y"] = X_2d[:, 1]
 
-# --- STEP 5: Static PNG Plot ---
+# --- STEP 5: Static plot (unchanged) ---
 plt.figure(figsize=(10, 7))
 sns.scatterplot(data=df, x="x", y="y", hue="Population", style="Artist")
 plt.title("t-SNE of Essentia Audio Embeddings (Colored by Population)")
@@ -89,37 +90,48 @@ plt.ylabel("t-SNE Dimension 2")
 plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
 plt.tight_layout()
 
-# Save static PNG
-output_dir = "visualization_maest_results"
+output_dir = "visualization_maest_results/embedding_visualization"
 os.makedirs(output_dir, exist_ok=True)
 png_path = os.path.join(output_dir, "tsne_by_population.png")
-if os.path.exists(png_path):
-    print(f"Overwriting existing plot at {png_path}")
-else:
-    print(f"Saving new plot to {png_path}")
 plt.savefig(png_path, dpi=300)
 plt.close()
 
-# --- STEP 6: Interactive Plot with Plotly (with symbol per Artist) ---
+# --- STEP 6: Interactive Plot with Custom Artist Shapes ---
+artist_symbol_map = {
+    "Antonia_Font": "circle",
+    "Els_Catarres": "x",
+    "Macedonia": "square",
+    "Manel": "cross",
+    "Marina_Rossell": "diamond",
+    "Txarango": "triangle-up",
+    "31_fam": "triangle-down",
+    "julieta": "triangle-left",
+    "la_ludwig_band": "triangle-right",
+    "mushkaa": "star",
+    "oques_grasses": "hexagon",
+    "the_tyets": "pentagon"
+}
+
 df["Label"] = df["Artist"] + " - " + df["Song"]
 
 fig = px.scatter(
     df,
     x="x", y="y",
     color="Population",
-    symbol="Artist",  # NEW: distinct marker per artist
+    symbol="Artist",  # <- assign shape by artist
+    symbol_map=artist_symbol_map,  # <- assign fixed shapes
     hover_name="Label",
-    title="Interactive t-SNE of Maest Audio Embeddings",
+    title="Interactive t-SNE of Essentia Audio Embeddings",
     labels={"x": "t-SNE Dimension 1", "y": "t-SNE Dimension 2"},
     width=1000,
     height=750
 )
 
+# 4. Save and open
 html_path = os.path.join(output_dir, "tsne_by_population_plotly.html")
 fig.write_html(html_path)
 print(f"✅ Interactive Plot saved to: {html_path}")
 
-# Auto-open in browser (WSL → Windows)
 html_full_path = os.path.abspath(html_path)
 if html_full_path.startswith("/mnt/"):
     drive_letter = html_full_path[5]
@@ -127,4 +139,3 @@ if html_full_path.startswith("/mnt/"):
     subprocess.run(["powershell.exe", "Start-Process", windows_path])
 else:
     print("⚠️ Could not convert path to Windows. Please open the HTML file manually.")
-
