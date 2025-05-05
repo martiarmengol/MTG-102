@@ -62,7 +62,7 @@ for k in k_values:
     df[f"Cluster_{k}"] = kmeans.fit_predict(df[["x", "y"]])
 
 # --- STEP 6: Interactive Plot for each k ---
-output_dir = "visualization_results/kmeans_clustering"
+output_dir = "visualization_results/kmeans_clustering_effnet"
 os.makedirs(output_dir, exist_ok=True)
 
 for k in k_values:

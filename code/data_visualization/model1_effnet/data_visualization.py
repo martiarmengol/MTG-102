@@ -62,7 +62,7 @@ plt.ylabel("t-SNE Dimension 2")
 plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
 plt.tight_layout()
 
-output_dir = "visualization_results/embedding_visualization"
+output_dir = "visualization_results/embedding_visualization_effnet"
 os.makedirs(output_dir, exist_ok=True)
 png_path = os.path.join(output_dir, "tsne_by_population.png")
 plt.savefig(png_path, dpi=300)
