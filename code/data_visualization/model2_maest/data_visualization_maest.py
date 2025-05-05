@@ -10,8 +10,22 @@ import plotly.express as px
 import subprocess
 
 # --- STEP 2: Load MAEST Embeddings from PKL files ---
-def load_embeddings(path, population_label):
-    print(f"Loading MAEST embeddings from: {path}")
+def load_embeddings(path, population_label, token_index=None):
+    """
+    Carga embeddings MAEST desde archivos PKL.
+    
+    Args:
+        path: Ruta al archivo PKL.
+        population_label: Etiqueta para la población (before/after).
+        token_index: Índice del token de embeddings a utilizar.
+                     Si es None, usa todos los tokens como antes.
+                     Si es un número (0 o 1), usa solo ese token específico.
+    """
+    if token_index is None:
+        print(f"Loading MAEST embeddings from: {path} (using ALL tokens)")
+    else:
+        print(f"Loading MAEST embeddings from: {path} (using token {token_index} only)")
+        
     with open(path, 'rb') as f:
         data = pickle.load(f)
     
@@ -24,22 +38,20 @@ def load_embeddings(path, population_label):
         
         print(f"Processing {song} by {artist}")
         
-        # Convert the nested list structure to a flattened embedding
-        # Based on professor's instructions: need to flatten the T, 6, 1, 685, 765 structure
-        # The key is to multiply dimensions 685 x 765 as mentioned
-        
-        # Process first element of the embedding data to get a representative feature
+        # Dos modalidades: usar un token específico o todos los tokens
         if embedding_data and isinstance(embedding_data, list):
-            # Flatten the nested list structure to get a usable representation
-            # This is an approximation since we don't have full details on the exact structure
-            flattened_features = []
-            
-            # Take a sample of elements to avoid memory issues
-            sample_size = min(len(embedding_data), 100)  # Sample size to prevent memory issues
-            for i in range(0, sample_size):
-                # Add embedding features to our flattened representation
-                if i < len(embedding_data) and embedding_data[i]:
-                    flattened_features.extend(embedding_data[i])
+            if token_index is not None and token_index < len(embedding_data):
+                # Modo 1: Usar solo el token específico
+                selected_token = embedding_data[token_index]
+                if isinstance(selected_token, list) and selected_token:
+                    flattened_features = selected_token
+            else:
+                # Modo 2: Usar todos los tokens
+                flattened_features = []
+                sample_size = min(len(embedding_data), 100)
+                for i in range(0, sample_size):
+                    if i < len(embedding_data) and embedding_data[i]:
+                        flattened_features.extend(embedding_data[i])
             
             # Convert to numpy array and ensure it has reasonable dimensions
             embedding_vector = np.array(flattened_features[:1000])  # Take first 1000 dimensions
@@ -54,8 +66,15 @@ def load_embeddings(path, population_label):
     print(f"Loaded {len(rows)} songs from {population_label}")
     return rows
 
-before = load_embeddings("song_embeddings/before_2012_maest_embeddings.pkl", "Before 2012")
-after = load_embeddings("song_embeddings/after_2018_maest_embeddings.pkl", "After 2018")
+# Opciones para el uso de tokens:
+# - None: usar todos los tokens del embedding
+# - 0: usar solo el token 0 para reducir ruido
+# - 1: usar solo el token 1 para reducir ruido
+selected_token = 0  # Cambiar este valor o poner None para usar todos los tokens
+
+# Usando el token seleccionado para los embeddings
+before = load_embeddings("song_embeddings/before_2012_maest_embeddings.pkl", "Before 2012", token_index=selected_token)
+after = load_embeddings("song_embeddings/after_2018_maest_embeddings.pkl", "After 2018", token_index=selected_token)
 all_songs = before + after
 
 
@@ -84,7 +103,16 @@ df["y"] = X_2d[:, 1]
 # --- STEP 5: Static plot (unchanged) ---
 plt.figure(figsize=(10, 7))
 sns.scatterplot(data=df, x="x", y="y", hue="Population", style="Artist")
-plt.title("t-SNE of Essentia Audio Embeddings (Colored by Population)")
+
+# Título dinámico según el modo seleccionado
+if selected_token is None:
+    title_suffix = "All Tokens"
+    file_suffix = "all_tokens"
+else:
+    title_suffix = f"Token {selected_token} Only"
+    file_suffix = f"token{selected_token}"
+
+plt.title(f"t-SNE of MAEST Audio Embeddings ({title_suffix})")
 plt.xlabel("t-SNE Dimension 1")
 plt.ylabel("t-SNE Dimension 2")
 plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
@@ -92,7 +120,7 @@ plt.tight_layout()
 
 output_dir = "visualization_maest_results/embedding_visualization"
 os.makedirs(output_dir, exist_ok=True)
-png_path = os.path.join(output_dir, "tsne_by_population.png")
+png_path = os.path.join(output_dir, f"tsne_by_population_{file_suffix}.png")
 plt.savefig(png_path, dpi=300)
 plt.close()
 
@@ -121,14 +149,14 @@ fig = px.scatter(
     symbol="Artist",  # <- assign shape by artist
     symbol_map=artist_symbol_map,  # <- assign fixed shapes
     hover_name="Label",
-    title="Interactive t-SNE of Essentia Audio Embeddings",
+    title=f"Interactive t-SNE of MAEST Audio Embeddings ({title_suffix})",
     labels={"x": "t-SNE Dimension 1", "y": "t-SNE Dimension 2"},
     width=1000,
     height=750
 )
 
 # 4. Save and open
-html_path = os.path.join(output_dir, "tsne_by_population_plotly.html")
+html_path = os.path.join(output_dir, f"tsne_by_population_{file_suffix}_plotly.html")
 fig.write_html(html_path)
 print(f"✅ Interactive Plot saved to: {html_path}")
 
