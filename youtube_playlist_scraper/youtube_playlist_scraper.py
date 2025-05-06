@@ -10,6 +10,9 @@ AUDIO_OUTPUT_DIR = 'downloads'
 METADATA_OUTPUT_FILE = 'catalan_music_metadata.csv'
 INPUT_CSV = 'playlists.csv'
 
+
+
+
 # Ensure output folder exists
 os.makedirs(AUDIO_OUTPUT_DIR, exist_ok=True)
 
@@ -53,19 +56,23 @@ def get_ydl_audio_opts(output_filename):
 # Helper: clean and standardize title
 
 def clean_title(title, channel):
-    # Remove channel name
+    if not title:
+        title = "unknown_title"
+    if not channel:
+        channel = ""
+
+    # Remove channel name from title
     title = title.replace(channel, '').strip()
 
-    # Remove special characters that break file paths
-    # Replace slashes and quotes, remove brackets, etc.
+    # Remove illegal/special characters
+    import re
     title = re.sub(r'[\\/:"*?<>|]+', '', title)   # Windows-illegal characters
     title = re.sub(r'[’"“”‘]', '', title)         # Fancy quotes
     title = title.replace(' - ', ' ').replace('—', ' ')
     title = title.strip()
 
     # Replace spaces with underscores
-    title = '_'.join(title.split())
-    return title
+    return '_'.join(title.split())[:100]  # Limit length
 
 # Iterate over playlists
 for playlist_url in playlist_urls:
