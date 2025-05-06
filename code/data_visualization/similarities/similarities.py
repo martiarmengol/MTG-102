@@ -43,8 +43,8 @@ effnet_embeddings = load_effnet_embeddings()
 maest_embeddings = load_maest_embeddings()
 
 # Example songs
-song1_key = "Els_Catarres::Caramelles"
-song2_key = "31_fam::al_cantu"
+song1_key = "oques_grasses::la_gent_que_estimo"
+song2_key = "oques_grasses::inevitable"
 
 if song1_key in effnet_embeddings and song2_key in effnet_embeddings:
     print("\n[EffNet Embeddings]")
