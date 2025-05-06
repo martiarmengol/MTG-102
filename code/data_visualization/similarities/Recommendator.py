@@ -130,14 +130,14 @@ def query_id_creator(artist, song):
 
 # --- Main execution ---
 model = "maest"  # or "maest"
-song_name = "Jenifer"
+Song_name = "Jenifer"
 Artist_name = "Els_Catarres"
 k = 4
 metric = "euclidean"
 
 
 
-query_id = query_id_creator(Artist_name, song_name)
+query_id = query_id_creator(Artist_name, Song_name)
 df = build_dataframe(model=model)
 
 # Apply KMeans clustering
