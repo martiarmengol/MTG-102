@@ -10,6 +10,9 @@ import unicodedata
 import re
 from sklearn.manifold import TSNE
 from rapidfuzz import process, fuzz
+import yt_dlp
+
+
 
 
 def fuzzy_merge(df1, df2, key1, key2, threshold=90, limit=1):
@@ -151,6 +154,50 @@ def normalize_text(text):
     text = "".join(c for c in text if not unicodedata.combining(c))  # Remove accents
     text = re.sub(r"[^\w\s]", "", text)  # Remove punctuation
     return text.strip().lower()
+
+
+def download_audio_from_youtube(url, output_path="temp_audio.wav"):
+    ydl_opts = {
+        'format': 'bestaudio/best',
+        'outtmpl': output_path,
+        'quiet': True,
+        'postprocessors': [{
+            'key': 'FFmpegExtractAudio',
+            'preferredcodec': 'wav',
+        }],
+    }
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        ydl.download([url])
+    return output_path
+
+def extract_embedding(audio_path):
+    # Pseudocode – adapt to your real embedding system
+    audio = MonoLoader(filename=audio_path)()
+    model = TensorflowPredictEffnetDiscogs(graphFilename="path/to/effnet.pb")
+    embedding = model(audio)  # shape (T, D)
+    agg_embedding = np.mean(embedding, axis=0)
+    return agg_embedding
+
+def recommend_for_youtube(url, df, kmeans, tsne_model, metric='cosine', n=5, k=12):
+    # Step 1: Download + embed
+    audio_path = download_audio_from_youtube(url)
+    new_embedding = extract_embedding(audio_path)
+
+    # Step 2: Assign cluster
+    cluster = kmeans.predict([new_embedding])[0]
+
+    # Step 3: Add to map
+    new_2d = tsne_model.fit_transform(np.vstack([df[[f"e{i}" for i in range(len(new_embedding))]].values, new_embedding]))
+    new_x, new_y = new_2d[-1]
+
+    # Step 4: Filter cluster & compute similarities
+    cluster_df = df[df[f"Cluster_{k}"] == cluster].copy()
+    from scipy.spatial.distance import cosine, euclidean
+    sim_func = lambda row: 1 - cosine(new_embedding, row[[f"e{i}" for i in range(len(new_embedding))]].values) if metric == "cosine" else euclidean(new_embedding, row[[f"e{i}" for i in range(len(new_embedding))]].values)
+    cluster_df["Similarity"] = cluster_df.apply(sim_func, axis=1)
+    top = cluster_df.sort_values("Similarity", ascending=(metric == "euclidean")).head(n)
+
+    return top, new_x, new_y
 
 
 if __name__ == "__main__":
