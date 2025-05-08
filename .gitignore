@@ -21,6 +21,7 @@ Thumbs.db
 
 # Data Visualization
 /venv 
+Interface/backend/venv
 /song_embeddings
 /visualization_results
 /visualization_maest_results
