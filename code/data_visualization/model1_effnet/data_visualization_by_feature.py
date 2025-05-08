@@ -1,5 +1,6 @@
 # --- STEP 1: Imports ---
 import json
+import pickle
 import os
 import numpy as np
 import pandas as pd
@@ -9,22 +10,22 @@ from sklearn.manifold import TSNE
 import plotly.express as px
 import plotly.graph_objects as go
 import subprocess
-import re
-import unicodedata
-import difflib
 from plotly.io import write_image
 
 # --- STEP 2: Load Embeddings ---
 def load_embeddings(path, population_label):
-    with open(path, 'r') as f:
-        data = json.load(f)
+    with open(path, 'rb') as f:
+        data = pickle.load(f)
     rows = []
     for entry in data:
+        # Obtener ID del embedding
+        entry_id = entry["id"]
         artist = entry["artist"]
         song = entry["song"]
         embedding_matrix = np.array(entry["embedding"])
         agg_embedding = np.mean(embedding_matrix, axis=0)
         rows.append({
+            "ID": entry_id,  # Usar ID del embedding
             "Song": song,
             "Artist": artist,
             "Population": population_label,
@@ -32,63 +33,36 @@ def load_embeddings(path, population_label):
         })
     return rows
 
-before = load_embeddings("song_embeddings/before_2012_effnet_embeddings.json", "Before 2012")
-after = load_embeddings("song_embeddings/after_2018_effnet_embeddings.json", "After 2018")
+before = load_embeddings("../../essentia-models/effnet/embeddings/before_2012-2025-05-08-effnet.pkl", "Before 2012")
+after = load_embeddings("../../essentia-models/effnet/embeddings/after_2018-2025-05-08-effnet.pkl", "After 2018")
 all_songs = before + after
 
 # --- STEP 3: Load metadata from CSVs ---
-before_meta = pd.read_csv("database_csv/db_before_2012.csv")
-after_meta = pd.read_csv("database_csv/db_after_2018.csv")
+before_meta = pd.read_csv("../../../db_download/db_csv/before_2012.csv")
+after_meta = pd.read_csv("../../../db_download/db_csv/after_2018.csv")
 
-# Rename 'Band' column to 'Artist' to match embeddings
-before_meta = before_meta.rename(columns={'Band': 'Artist'})
-after_meta = after_meta.rename(columns={'Band': 'Artist'})
+# Asegurar que 'ID' esté como columna en los metadatos
+if 'ID' not in before_meta.columns:
+    before_meta.rename(columns={'id': 'ID'}, inplace=True)
+if 'ID' not in after_meta.columns:
+    after_meta.rename(columns={'id': 'ID'}, inplace=True)
 
-# Rename 'Song Name' column to 'Song' to match embeddings
-before_meta = before_meta.rename(columns={'Song Name': 'Song'})
-after_meta = after_meta.rename(columns={'Song Name': 'Song'})
+# Renombrar columnas para que coincidan con el formato esperado
+if 'Band' in before_meta.columns and 'Artist' not in before_meta.columns:
+    before_meta.rename(columns={'Band': 'Artist'}, inplace=True)
+if 'Song Name' in before_meta.columns and 'Song' not in before_meta.columns:
+    before_meta.rename(columns={'Song Name': 'Song'}, inplace=True)
 
-# --- STEP 4: Normalizar nombres para que coincidan con los embeddings ---
-def remove_accents(input_str):
-    """Eliminar acentos y normalizar caracteres unicode"""
-    nfkd_form = unicodedata.normalize('NFKD', input_str)
-    return ''.join([c for c in nfkd_form if not unicodedata.combining(c)])
+if 'Band' in after_meta.columns and 'Artist' not in after_meta.columns:
+    after_meta.rename(columns={'Band': 'Artist'}, inplace=True)
+if 'Song Name' in after_meta.columns and 'Song' not in after_meta.columns:
+    after_meta.rename(columns={'Song Name': 'Song'}, inplace=True)
 
-def normalize_name(name):
-    """Convierte nombres a formato similar al de los embeddings: minúsculas y guiones bajos"""
-    # Convertir a string y eliminar espacios al inicio/fin
-    name_str = str(name).strip()
-    
-    # Eliminar acentos
-    name_str = remove_accents(name_str)
-    
-    # Reemplazar puntuación y espacios con guiones bajos
-    normalized = re.sub(r'[,\.\'\"\(\)\[\]\{\}\-\/\\\s]+', '_', name_str)
-    
-    # Reducir guiones bajos múltiples a uno solo
-    normalized = re.sub(r'_+', '_', normalized)
-    
-    # Eliminar guiones bajos al inicio y fin
-    normalized = normalized.strip('_')
-    
-    # Convertir a minúsculas
-    normalized = normalized.lower()
-    
-    # Eliminar otros caracteres especiales
-    normalized = re.sub(r'[^\w_]', '', normalized)
-    
-    return normalized
-
-# Crear versiones normalizadas de Artist y Song en los metadatos
-before_meta['Artist_Norm'] = before_meta['Artist'].apply(normalize_name)
-before_meta['Song_Norm'] = before_meta['Song'].apply(normalize_name)
-after_meta['Artist_Norm'] = after_meta['Artist'].apply(normalize_name)
-after_meta['Song_Norm'] = after_meta['Song'].apply(normalize_name)
-
-# --- STEP 5: Flatten embeddings ---
+# --- STEP 4: Flatten embeddings ---
 flat_data = []
 for song in all_songs:
     row = {
+        "ID": song["ID"],     # Añadir ID a los datos aplanados
         "Song": song["Song"],
         "Artist": song["Artist"],
         "Population": song["Population"]
@@ -99,113 +73,29 @@ for song in all_songs:
 
 df = pd.DataFrame(flat_data)
 
-# --- STEP 6: Merge metadata with embeddings ---
+# --- STEP 5: Merge metadata with embeddings ---
 # Combine metadata
 before_meta['Population'] = 'Before 2012'
 after_meta['Population'] = 'After 2018'
 all_meta = pd.concat([before_meta, after_meta], ignore_index=True)
 
-# Select only the features we need
-meta_features = all_meta[['Artist', 'Song', 'Artist_Norm', 'Song_Norm', 'Population', 'Instrumentation', 'Genre', 'Acoustic vs Electronic', 'Gender Voice', 'Bpm']]
+# Realizar la fusión basada en ID
+df_with_meta = pd.merge(
+    df, 
+    all_meta[['ID', 'Instrumentation', 'Genre', 'Acoustic vs Electronic', 'Gender Voice', 'Bpm', 'Artist', 'Song']],
+    on='ID',
+    how='left',
+    suffixes=('', '_original')
+)
 
-# Función para encontrar la mejor coincidencia
-def find_best_match(artist, song, meta_features, threshold=0.85):
-    """Encuentra la mejor coincidencia basada en similitud de strings"""
-    # Primero intenta coincidencia exacta
-    exact_match = meta_features[(meta_features['Artist_Norm'] == artist) & (meta_features['Song_Norm'] == song)]
-    if not exact_match.empty:
-        return exact_match.iloc[0]
-    
-    # Luego intenta coincidencia fuzzy
-    best_score = 0
-    best_match = None
-    
-    # Filtra primero por artista para mejorar rendimiento
-    artist_matches = meta_features[meta_features['Artist_Norm'].str.contains(artist[:4], regex=False)]
-    
-    if not artist_matches.empty:
-        for _, row in artist_matches.iterrows():
-            # Calcular similitud para artista y canción
-            artist_score = difflib.SequenceMatcher(None, artist, row['Artist_Norm']).ratio()
-            song_score = difflib.SequenceMatcher(None, song, row['Song_Norm']).ratio()
-            
-            # Promedio ponderado (damos más peso a la coincidencia de canciones)
-            combined_score = (artist_score * 0.4) + (song_score * 0.6)
-            
-            if combined_score > best_score and combined_score >= threshold:
-                best_score = combined_score
-                best_match = row
-    
-    return best_match
-
-# Para cada embedding, encuentra la fila correspondiente en los metadatos
-result_rows = []
-match_count = 0
-fuzzy_match_count = 0
-
-for _, row in df.iterrows():
-    artist = row['Artist']
-    song = row['Song']
-    
-    # Intentar normalizar el nombre del artista y canción del embedding
-    artist_norm = normalize_name(artist)
-    song_norm = normalize_name(song)
-    
-    # Buscar coincidencia exacta
-    matching_meta = meta_features[
-        (meta_features['Artist_Norm'] == artist_norm) & 
-        (meta_features['Song_Norm'] == song_norm)
-    ]
-    
-    if not matching_meta.empty:
-        match_count += 1
-        meta_row = matching_meta.iloc[0]
-        new_row = row.copy()
-        new_row['Instrumentation'] = meta_row['Instrumentation']
-        new_row['Genre'] = meta_row['Genre']
-        new_row['Acoustic vs Electronic'] = meta_row['Acoustic vs Electronic']
-        new_row['Gender Voice'] = meta_row['Gender Voice']
-        new_row['Bpm'] = meta_row['Bpm']
-        new_row['Artist_Original'] = meta_row['Artist']
-        new_row['Song_Original'] = meta_row['Song']
-        new_row['Match_Type'] = 'Exact'
-        result_rows.append(new_row)
-    else:
-        # Buscar coincidencia aproximada
-        best_match = find_best_match(artist_norm, song_norm, meta_features)
-        
-        if best_match is not None:
-            fuzzy_match_count += 1
-            new_row = row.copy()
-            new_row['Instrumentation'] = best_match['Instrumentation']
-            new_row['Genre'] = best_match['Genre']
-            new_row['Acoustic vs Electronic'] = best_match['Acoustic vs Electronic']
-            new_row['Gender Voice'] = best_match['Gender Voice']
-            new_row['Bpm'] = best_match['Bpm']
-            new_row['Artist_Original'] = best_match['Artist']
-            new_row['Song_Original'] = best_match['Song']
-            new_row['Match_Type'] = 'Fuzzy'
-            result_rows.append(new_row)
-            print(f"Coincidencia aproximada: {artist} - {song} → {best_match['Artist']} - {best_match['Song']}")
-        else:
-            print(f"No se encontró coincidencia para: {artist} - {song}")
-            # Intentar identificar artistas similares
-            similar_artists = meta_features[meta_features['Artist_Norm'].str.contains(artist_norm[:3], regex=False)]
-            if not similar_artists.empty:
-                unique_artists = similar_artists['Artist'].unique()
-                print(f"  Artistas similares encontrados: {', '.join(unique_artists)}")
-
-# Crear nuevo DataFrame con las filas que tienen metadatos
-df_with_meta = pd.DataFrame(result_rows)
-
-# Si no hay filas con metadatos, usar el DataFrame original
-if len(result_rows) == 0:
-    print("⚠️ No se encontraron coincidencias entre embeddings y metadatos. Usando DataFrame sin metadatos.")
-    df_with_meta = df.copy()
+# Verificar que la fusión fue exitosa
+missing_metadata = df_with_meta['Instrumentation'].isna().sum()
+if missing_metadata > 0:
+    print(f"⚠️ Advertencia: {missing_metadata} embeddings no tienen metadatos correspondientes.")
 else:
-    print(f"✅ Se encontraron {match_count} coincidencias exactas y {fuzzy_match_count} coincidencias aproximadas entre embeddings y metadatos (total: {len(result_rows)}).")
+    print(f"✅ Todos los embeddings ({len(df_with_meta)}) se fusionaron correctamente con sus metadatos.")
 
-# --- STEP 7: Preprocesar las características para mejor visualización ---
+# --- STEP 6: Preprocesar las características para mejor visualización ---
 # Convertir Instrumentation de valores numéricos a categorías
 def categorize_instrumentation(value):
     value = int(value) if pd.notna(value) and value != '' else 0
@@ -261,7 +151,7 @@ if 'Genre' in df_with_meta.columns:
             genre_colors[genre] = other_colors[i % len(other_colors)]
             i += 1
 
-# --- STEP 8: Apply t-SNE ---
+# --- STEP 7: Apply t-SNE ---
 embedding_cols = [col for col in df_with_meta.columns if col.startswith("e")]
 X = df_with_meta[embedding_cols].values
 tsne = TSNE(n_components=2, perplexity=30, random_state=42)
@@ -269,7 +159,7 @@ X_2d = tsne.fit_transform(X)
 df_with_meta["x"] = X_2d[:, 0]
 df_with_meta["y"] = X_2d[:, 1]
 
-# --- STEP 9: Static plot (unchanged) ---
+# --- STEP 8: Static plot (unchanged) ---
 plt.figure(figsize=(10, 7))
 
 # Crear un mapa de colores personalizado para matplotlib
@@ -296,7 +186,7 @@ png_path = os.path.join(output_dir, "tsne_by_population.png")
 plt.savefig(png_path, dpi=300)
 plt.close()
 
-# --- STEP 10: Create Interactive Plots with Different Colorings ---
+# --- STEP 9: Create Interactive Plots with Different Colorings ---
 artist_symbol_map = {
     "antonia_font": "circle",
     "els_catarres": "x",
@@ -314,7 +204,7 @@ artist_symbol_map = {
 }
 
 df_with_meta["Label"] = df_with_meta.apply(
-    lambda row: f"{row.get('Artist_Original', row['Artist'])} - {row.get('Song_Original', row['Song'])}", 
+    lambda row: f"{row.get('Artist_original', row['Artist'])} - {row.get('Song_original', row['Song'])}", 
     axis=1
 )
 
@@ -542,9 +432,6 @@ if html_paths:
     else:
         print("⚠️ Could not convert path to Windows. Please open the HTML file manually.")
 
-    # Print summary of all plots created
-    print("\n📊 Resumen de visualizaciones creadas:")
-    for feature, path in zip([f["name"] for f in features if f["name"] in df_with_meta.columns], html_paths):
-        print(f"- {feature}: {os.path.basename(path)}")
+
 else:
     print("⚠️ No se crearon visualizaciones")
