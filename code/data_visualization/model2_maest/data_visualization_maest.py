@@ -73,8 +73,8 @@ def load_embeddings(path, population_label, token_index=None):
 selected_token = 0  # Cambiar este valor o poner None para usar todos los tokens
 
 # Usando el token seleccionado para los embeddings
-before = load_embeddings("song_embeddings/before_2012_maest_embeddings.pkl", "Before 2012", token_index=selected_token)
-after = load_embeddings("song_embeddings/after_2018_maest_embeddings.pkl", "After 2018", token_index=selected_token)
+before = load_embeddings("../../essentia-models/maest/embeddings/before_2012-2025-05-08_maest.pkl", "Before 2012", token_index=selected_token)
+after = load_embeddings("../../essentia-models/maest/embeddings/after_2018-2025-05-08_maest.pkl", "After 2018", token_index=selected_token)
 all_songs = before + after
 
 
