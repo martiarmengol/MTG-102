@@ -126,9 +126,7 @@ if 'Genre' in df_with_meta.columns:
     def simplify_genre(genre):
         if pd.isna(genre) or genre == '':
             return 'Unknown'
-        # Tomar el primer género si hay varios separados por /
-        main_genre = genre.split('/')[0].strip()
-        return main_genre
+        return genre.strip()
     
     df_with_meta['Genre_Main'] = df_with_meta['Genre'].apply(simplify_genre)
     
@@ -136,9 +134,16 @@ if 'Genre' in df_with_meta.columns:
     genre_colors = {
         "Pop": "#1f77b4",         # Azul
         "Folk": "#ff7f0e",        # Naranja
-        "Urbà": "#2ca02c",        # Verde
+        "Urbà": "#2ca02c",        # Verde base
+        "Urbà/Pop": "#7fbc41",    # Verde claro
+        "Urbà/Trap": "#4d9221",   # Verde oscuro
+        "Urbà/Trap Català": "#276419", # Verde muy oscuro
+        "Urbà/Reggaeton": "#c51b7d",   # Rosa
+        "Urbà/Bossa Nova": "#de77ae",  # Rosa claro
         "Reggaeton": "#d62728",   # Rojo
         "Trap": "#9467bd",        # Púrpura
+        "Trap Català": "#8c6d31", # Marrón
+        "Bossa Nova": "#8c564b",  # Marrón oscuro
         "Unknown": "#7f7f7f"      # Gris
     }
     
@@ -219,6 +224,15 @@ def create_interactive_plot(color_by, title_suffix=None, show_legend=True, custo
         column_to_use = "Instrumentation_Category"
     elif color_by == "Genre" and "Genre_Main" in df_with_meta.columns:
         column_to_use = "Genre_Main"
+
+    # Limpiar espacios en todas las características categóricas excepto Population
+    if color_by != "Population" and color_by != "Bpm":
+        df_with_meta[column_to_use] = df_with_meta[column_to_use].str.strip()
+        # Normalizar Gender Voice para que Male & Female y Female & Male sean iguales
+        if color_by == "Gender Voice":
+            df_with_meta[column_to_use] = df_with_meta[column_to_use].apply(
+                lambda x: "Male & Female" if pd.notna(x) and "Male" in x and "Female" in x else x
+            )
     
     # Configurar paleta de colores personalizada para características categóricas
     if color_by == "Population":
